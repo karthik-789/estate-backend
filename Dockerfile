@@ -1,8 +1,8 @@
 FROM maven:3.9.11-eclipse-temurin-17 AS build
 WORKDIR /workspace
-COPY pom.xml .
+COPY pom.xml render-maven-settings.xml ./
 COPY src ./src
-RUN mvn --batch-mode --no-transfer-progress -DskipTests package
+RUN mvn --settings render-maven-settings.xml --batch-mode --no-transfer-progress -DskipTests package
 
 FROM eclipse-temurin:17-jre
 WORKDIR /app
