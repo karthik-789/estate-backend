@@ -12,7 +12,7 @@ public class Notification {
     @Column(nullable = false, length = 160) private String title;
     @Column(nullable = false, length = 1000) private String message;
     @Column(nullable = false, length = 40) private String type;
-    @Column(nullable = false) private boolean read;
+    @Column(name = "is_read", nullable = false) private boolean read;
     @Column(nullable = false, updatable = false) private LocalDateTime createdAt;
     @PrePersist void onCreate() { createdAt = LocalDateTime.now(); }
 }
