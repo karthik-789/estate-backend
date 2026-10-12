@@ -15,6 +15,7 @@ public class DemoDataInitializer implements CommandLineRunner {
     private final UserRepository userRepository;
     private final AgentProfileRepository agentProfileRepository;
     private final PropertyRepository propertyRepository;
+    private final PropertyImageRepository propertyImageRepository;
     private final PasswordEncoder passwordEncoder;
 
     @Value("${app.seed.demo-password:}") private String demoPassword;
@@ -33,6 +34,7 @@ public class DemoDataInitializer implements CommandLineRunner {
             sample(agent, "Orchid Enclave Plot", PropertyType.PLOT, ListingType.SALE, "Chennai", "Tamil Nadu", "OMR", 6200000, null, null, 2400);
             sample(agent, "Capital Workspaces", PropertyType.OFFICE, ListingType.RENT, "Delhi", "Delhi", "Saket", 95000, null, 2, 1250);
         }
+        propertyRepository.findAll().forEach(this::addDemoImageIfMissing);
     }
 
     private User createUser(String name, String email, Role role) {
@@ -74,6 +76,24 @@ public class DemoDataInitializer implements CommandLineRunner {
         property.setStatus(PropertyStatus.AVAILABLE);
         property.setVerificationStatus(VerificationStatus.APPROVED);
         propertyRepository.save(property);
+    }
+
+    private void addDemoImageIfMissing(Property property) {
+        if (!property.getImages().isEmpty()) return;
+
+        PropertyImage image = new PropertyImage();
+        image.setProperty(property);
+        image.setImageUrl(imagePathFor(property.getPropertyType()));
+        propertyImageRepository.save(image);
+    }
+
+    private String imagePathFor(PropertyType propertyType) {
+        return switch (propertyType) {
+            case VILLA, HOUSE -> "/property-images/bengaluru-villa.png";
+            case PLOT -> "/property-images/hyderabad-plot.png";
+            case COMMERCIAL, OFFICE, SHOP -> "/property-images/mumbai-office.png";
+            case APARTMENT -> "/property-images/hyderabad-apartment.png";
+        };
     }
 }
 
